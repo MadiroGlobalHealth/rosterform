@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { PersonalInformation, StepProps } from '@/types/form';
 import { personalSchema } from '@/utils/validation';
 import { formOptions } from '@/utils/formOptions';
+import { useDebouncedFormUpdates } from '@/hooks/useDebouncedFormUpdates';
 import FormField from '@/components/ui/FormField';
 import StepNavigation from '@/components/ui/StepNavigation';
 
@@ -35,11 +36,12 @@ const Step1Personal: React.FC<Step1PersonalProps> = ({
   });
 
   const watchedValues = watch();
+  const { debouncedUpdate, forceUpdate } = useDebouncedFormUpdates(onUpdate);
 
-  // Update parent component when form data changes
+  // Update parent component when form data changes (debounced)
   useEffect(() => {
-    onUpdate(watchedValues);
-  }, [watchedValues, onUpdate]);
+    debouncedUpdate(watchedValues);
+  }, [watchedValues, debouncedUpdate]);
 
   // Update proceed state based on form validity
   useEffect(() => {
@@ -55,6 +57,8 @@ const Step1Personal: React.FC<Step1PersonalProps> = ({
 
   const onSubmit = () => {
     if (isValid) {
+      // Force immediate update before proceeding
+      forceUpdate(watchedValues);
       onNext();
     }
   };

@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { MotivationNotes, StepProps } from '@/types/form';
 import { motivationSchema } from '@/utils/validation';
+import { useDebouncedFormUpdates } from '@/hooks/useDebouncedFormUpdates';
 import FormField from '@/components/ui/FormField';
 import StepNavigation from '@/components/ui/StepNavigation';
 
@@ -39,11 +40,12 @@ const Step8Motivation: React.FC<Step8MotivationProps> = ({
   });
 
   const watchedValues = watch();
+  const { debouncedUpdate, forceUpdate } = useDebouncedFormUpdates(onUpdate, 200); // Slightly longer delay for textareas
 
-  // Update parent component when form data changes
+  // Update parent component when form data changes (debounced)
   useEffect(() => {
-    onUpdate(watchedValues);
-  }, [watchedValues, onUpdate]);
+    debouncedUpdate(watchedValues);
+  }, [watchedValues, debouncedUpdate]);
 
   // Update proceed state based on form validity and consent
   useEffect(() => {
@@ -59,6 +61,9 @@ const Step8Motivation: React.FC<Step8MotivationProps> = ({
 
   const handleFinalSubmit = () => {
     if (isValid && dataProcessingConsent) {
+      // Force immediate update before final submission
+      forceUpdate(watchedValues);
+      
       const newsletterData = {
         subscribeNewsletter: newsletterConsent,
         dataProcessingConsent: dataProcessingConsent

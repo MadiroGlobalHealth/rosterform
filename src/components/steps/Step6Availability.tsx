@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { AvailabilityEngagement, StepProps } from '@/types/form';
 import { availabilitySchema } from '@/utils/validation';
 import { formOptions } from '@/utils/formOptions';
+import { useDebouncedFormUpdates } from '@/hooks/useDebouncedFormUpdates';
 import FormField from '@/components/ui/FormField';
 import StepNavigation from '@/components/ui/StepNavigation';
 
@@ -35,10 +36,11 @@ const Step6Availability: React.FC<Step6AvailabilityProps> = ({
   });
 
   const watchedValues = watch();
+  const { debouncedUpdate, forceUpdate } = useDebouncedFormUpdates(onUpdate);
 
   useEffect(() => {
-    onUpdate(watchedValues);
-  }, [watchedValues, onUpdate]);
+    debouncedUpdate(watchedValues);
+  }, [watchedValues, debouncedUpdate]);
 
   useEffect(() => {
     setCanProceed(isValid);
@@ -51,7 +53,10 @@ const Step6Availability: React.FC<Step6AvailabilityProps> = ({
   }, [data, setValue]);
 
   const onSubmit = () => {
-    if (isValid) onNext();
+    if (isValid) {
+      forceUpdate(watchedValues);
+      onNext();
+    }
   };
 
   return (
