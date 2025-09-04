@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { OpenSourceEntrepreneurship, StepProps } from '@/types/form';
 import { openSourceSchema } from '@/utils/validation';
 import { formOptions } from '@/utils/formOptions';
+import { useDebouncedFormUpdates } from '@/hooks/useDebouncedFormUpdates';
 import FormField from '@/components/ui/FormField';
 import MultiSelect from '@/components/ui/MultiSelect';
 import StepNavigation from '@/components/ui/StepNavigation';
@@ -35,10 +36,11 @@ const Step5OpenSource: React.FC<Step5OpenSourceProps> = ({
   });
 
   const watchedValues = watch();
+  const { debouncedUpdate, forceUpdate } = useDebouncedFormUpdates(onUpdate);
 
   useEffect(() => {
-    onUpdate(watchedValues);
-  }, [watchedValues, onUpdate]);
+    debouncedUpdate(watchedValues);
+  }, [watchedValues, debouncedUpdate]);
 
   useEffect(() => {
     setCanProceed(isValid);
@@ -52,7 +54,10 @@ const Step5OpenSource: React.FC<Step5OpenSourceProps> = ({
   }, [data, setValue]);
 
   const onSubmit = () => {
-    if (isValid) onNext();
+    if (isValid) {
+      forceUpdate(watchedValues);
+      onNext();
+    }
   };
 
   return (

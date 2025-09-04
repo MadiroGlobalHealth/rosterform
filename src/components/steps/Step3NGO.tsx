@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { NGOExperience, StepProps } from '@/types/form';
 import { ngoSchema } from '@/utils/validation';
 import { formOptions } from '@/utils/formOptions';
+import { useDebouncedFormUpdates } from '@/hooks/useDebouncedFormUpdates';
 import FormField from '@/components/ui/FormField';
 import MultiSelect from '@/components/ui/MultiSelect';
 import StepNavigation from '@/components/ui/StepNavigation';
@@ -35,11 +36,12 @@ const Step3NGO: React.FC<Step3NGOProps> = ({
   });
 
   const watchedValues = watch();
+  const { debouncedUpdate, forceUpdate } = useDebouncedFormUpdates(onUpdate);
 
-  // Update parent component when form data changes
+  // Update parent component when form data changes (debounced)
   useEffect(() => {
-    onUpdate(watchedValues);
-  }, [watchedValues, onUpdate]);
+    debouncedUpdate(watchedValues);
+  }, [watchedValues, debouncedUpdate]);
 
   // Update proceed state based on form validity
   useEffect(() => {
@@ -54,6 +56,7 @@ const Step3NGO: React.FC<Step3NGOProps> = ({
 
   const onSubmit = () => {
     if (isValid) {
+      forceUpdate(watchedValues);
       onNext();
     }
   };
