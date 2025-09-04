@@ -12,7 +12,9 @@ const initialFormData: FormData = {
   },
   education: {
     highestEducation: '',
+    highestEducationOther: '',
     fieldOfStudy: '',
+    fieldOfStudyOther: '',
     yearsExperience: '',
     contributionLevel: ''
   },
@@ -22,19 +24,28 @@ const initialFormData: FormData = {
   },
   professional: {
     expertiseAreas: [],
+    expertiseAreasOther: '',
     rolesHeld: [],
+    rolesHeldOther: '',
     digitalHealthPlatforms: [],
+    digitalHealthPlatformsOther: '',
     languages: [],
-    certifications: []
+    languagesOther: '',
+    certifications: [],
+    certificationsOther: ''
   },
   openSource: {
     openSourcePlatforms: [],
+    openSourcePlatformsOther: '',
     openSourceContributions: '',
     startupExperience: '',
-    problemSolvingApproach: []
+    problemSolvingApproach: [],
+    problemSolvingApproachOther: ''
   },
   availability: {
     preferredHourlyRate: '',
+    preferredHourlyRateMin: '',
+    preferredHourlyRateMax: '',
     minimumHourlyRate: '',
     weeklyAvailability: '',
     unavailablePeriods: '',
@@ -44,6 +55,7 @@ const initialFormData: FormData = {
   },
   contracting: {
     contractingModality: '',
+    contractingModalityOther: '',
     internationalContracting: '',
     workRestrictions: ''
   },

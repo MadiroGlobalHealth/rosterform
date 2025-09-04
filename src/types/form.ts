@@ -9,7 +9,9 @@ export interface PersonalInformation {
 
 export interface EducationExperience {
   highestEducation: string;
+  highestEducationOther?: string;
   fieldOfStudy: string;
+  fieldOfStudyOther?: string;
   yearsExperience: string;
   contributionLevel: string;
 }
@@ -21,21 +23,30 @@ export interface NGOExperience {
 
 export interface ProfessionalProfile {
   expertiseAreas: string[];
+  expertiseAreasOther?: string;
   rolesHeld: string[];
+  rolesHeldOther?: string;
   digitalHealthPlatforms: string[];
+  digitalHealthPlatformsOther?: string;
   languages: string[];
+  languagesOther?: string;
   certifications?: string[];
+  certificationsOther?: string;
 }
 
 export interface OpenSourceEntrepreneurship {
   openSourcePlatforms: string[];
+  openSourcePlatformsOther?: string;
   openSourceContributions: string;
   startupExperience: string;
   problemSolvingApproach: string[];
+  problemSolvingApproachOther?: string;
 }
 
 export interface AvailabilityEngagement {
   preferredHourlyRate: string;
+  preferredHourlyRateMin: string;
+  preferredHourlyRateMax: string;
   minimumHourlyRate: string;
   weeklyAvailability: string;
   unavailablePeriods?: string;
@@ -46,6 +57,7 @@ export interface AvailabilityEngagement {
 
 export interface ContractingCompliance {
   contractingModality: string;
+  contractingModalityOther?: string;
   internationalContracting: string;
   workRestrictions?: string;
 }

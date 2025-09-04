@@ -12,6 +12,7 @@ interface MultiSelectProps {
   maxSelections?: number;
   className?: string;
   error?: string;
+  showOrder?: boolean;
 }
 
 const MultiSelect: React.FC<MultiSelectProps> = ({
@@ -20,7 +21,8 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
   onChange,
   maxSelections,
   className = '',
-  error
+  error,
+  showOrder = false
 }) => {
   const normalizedOptions: Option[] = options.map(opt => 
     typeof opt === 'string' ? { value: opt, label: opt } : opt
@@ -42,7 +44,34 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
     <div className={`space-y-2 ${className}`}>
       {maxSelections && (
         <div className="text-sm text-gray-600 mb-3">
-          Select up to {maxSelections} options ({selected.length}/{maxSelections} selected)
+          {showOrder 
+            ? `Select up to ${maxSelections} options in order of importance (${selected.length}/${maxSelections} selected)` 
+            : `Select up to ${maxSelections} options (${selected.length}/${maxSelections} selected)`
+          }
+        </div>
+      )}
+
+      {/* Show selected items in order (for showOrder mode) */}
+      {showOrder && selected.length > 0 && (
+        <div className="bg-gray-50 rounded-lg p-4 mb-4">
+          <h4 className="text-sm font-medium text-gray-700 mb-2">Your ranking:</h4>
+          <div className="space-y-2">
+            {selected.map((item, index) => (
+              <div key={item} className="flex items-center justify-between bg-white rounded px-3 py-2 border">
+                <span className="text-sm">
+                  <span className="font-medium text-madiro-primary">#{index + 1}</span> {item}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => onChange(selected.filter(s => s !== item))}
+                  className="text-gray-400 hover:text-red-500"
+                  title="Remove"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       )}
       
@@ -50,6 +79,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
         {normalizedOptions.map((option) => {
           const isSelected = selected.includes(option.value);
           const isDisabled = Boolean(maxSelections && selected.length >= maxSelections && !isSelected);
+          const order = isSelected ? selected.indexOf(option.value) + 1 : 0;
           
           return (
             <label 
@@ -71,9 +101,14 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                 className="form-checkbox mt-0.5"
                 disabled={isDisabled}
               />
-              <span className={`text-sm leading-relaxed ${isSelected ? 'text-madiro-primary font-medium' : 'text-gray-700'}`}>
+              <span className={`text-sm leading-relaxed flex-1 ${isSelected ? 'text-madiro-primary font-medium' : 'text-gray-700'}`}>
                 {option.label}
               </span>
+              {showOrder && isSelected && (
+                <span className="text-xs bg-madiro-primary text-white rounded-full w-6 h-6 flex items-center justify-center font-medium">
+                  {order}
+                </span>
+              )}
             </label>
           );
         })}

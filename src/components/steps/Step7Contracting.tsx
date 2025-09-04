@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ContractingCompliance, StepProps } from '@/types/form';
 import { contractingSchema } from '@/utils/validation';
 import { formOptions } from '@/utils/formOptions';
+import { useDebouncedFormUpdates } from '@/hooks/useDebouncedFormUpdates';
 import FormField from '@/components/ui/FormField';
 import StepNavigation from '@/components/ui/StepNavigation';
 
@@ -36,19 +37,21 @@ const Step7Contracting: React.FC<Step7ContractingProps> = ({
   });
 
   const watchedValues = watch();
+  const { debouncedUpdate, forceUpdate } = useDebouncedFormUpdates(onUpdate);
 
   useEffect(() => {
-    onUpdate(watchedValues);
-  }, [watchedValues, onUpdate]);
+    debouncedUpdate(watchedValues);
+  }, [watchedValues, debouncedUpdate]);
 
   useEffect(() => {
     setCanProceed(isValid);
   }, [isValid]);
 
   useEffect(() => {
-    Object.keys(data).forEach((key) => {
-      setValue(key as keyof ContractingCompliance, data[key as keyof ContractingCompliance]);
-    });
+    setValue('contractingModality', data.contractingModality || '');
+    setValue('contractingModalityOther', data.contractingModalityOther || '');
+    setValue('internationalContracting', data.internationalContracting || '');
+    setValue('workRestrictions', data.workRestrictions || '');
   }, [data, setValue]);
 
   useEffect(() => {
@@ -56,7 +59,10 @@ const Step7Contracting: React.FC<Step7ContractingProps> = ({
   }, [watchedValues.contractingModality]);
 
   const onSubmit = () => {
-    if (isValid) onNext();
+    if (isValid) {
+      forceUpdate(watchedValues);
+      onNext();
+    }
   };
 
   return (
@@ -97,9 +103,10 @@ const Step7Contracting: React.FC<Step7ContractingProps> = ({
           <FormField
             label="Please specify your contracting modality"
             required
+            error={errors.contractingModalityOther?.message}
           >
             <input
-              {...register('contractingModality')}
+              {...register('contractingModalityOther')}
               type="text"
               className="form-input"
               placeholder="e.g., Partnership, Cooperative"

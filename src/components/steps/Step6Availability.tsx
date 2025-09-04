@@ -47,9 +47,15 @@ const Step6Availability: React.FC<Step6AvailabilityProps> = ({
   }, [isValid]);
 
   useEffect(() => {
-    Object.keys(data).forEach((key) => {
-      setValue(key as keyof AvailabilityEngagement, data[key as keyof AvailabilityEngagement]);
-    });
+    setValue('preferredHourlyRate', data.preferredHourlyRate || '');
+    setValue('preferredHourlyRateMin', data.preferredHourlyRateMin || '');
+    setValue('preferredHourlyRateMax', data.preferredHourlyRateMax || '');
+    setValue('minimumHourlyRate', data.minimumHourlyRate || '');
+    setValue('weeklyAvailability', data.weeklyAvailability || '');
+    setValue('unavailablePeriods', data.unavailablePeriods || '');
+    setValue('remoteLocation', data.remoteLocation || '');
+    setValue('travelWillingness', data.travelWillingness || '');
+    setValue('maxAssignmentDuration', data.maxAssignmentDuration || '');
   }, [data, setValue]);
 
   const onSubmit = () => {
@@ -75,15 +81,33 @@ const Step6Availability: React.FC<Step6AvailabilityProps> = ({
         <FormField
           label="Preferred hourly rate range (USD)"
           required
-          error={errors.preferredHourlyRate?.message}
-          hint="e.g., $75-100 or $50-75"
+          error={errors.preferredHourlyRateMin?.message || errors.preferredHourlyRateMax?.message}
+          hint="Enter your preferred rate range"
         >
-          <input
-            {...register('preferredHourlyRate')}
-            type="text"
-            className="form-input"
-            placeholder="$75-100"
-          />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">From (USD)</label>
+              <input
+                {...register('preferredHourlyRateMin')}
+                type="number"
+                min="1"
+                step="1"
+                className="form-input"
+                placeholder="75"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">To (USD)</label>
+              <input
+                {...register('preferredHourlyRateMax')}
+                type="number"
+                min="1"
+                step="1"
+                className="form-input"
+                placeholder="100"
+              />
+            </div>
+          </div>
         </FormField>
 
         <FormField
@@ -94,9 +118,11 @@ const Step6Availability: React.FC<Step6AvailabilityProps> = ({
         >
           <input
             {...register('minimumHourlyRate')}
-            type="text"
+            type="number"
+            min="1"
+            step="1"
             className="form-input"
-            placeholder="$50"
+            placeholder="50"
           />
         </FormField>
 
@@ -152,7 +178,7 @@ const Step6Availability: React.FC<Step6AvailabilityProps> = ({
                   {...register('travelWillingness')}
                   type="radio"
                   value={option}
-                  className="form-checkbox"
+                  className="form-radio"
                 />
                 <span className="text-sm text-gray-700">{option}</span>
               </label>
@@ -172,7 +198,7 @@ const Step6Availability: React.FC<Step6AvailabilityProps> = ({
                   {...register('maxAssignmentDuration')}
                   type="radio"
                   value={option}
-                  className="form-checkbox"
+                  className="form-radio"
                 />
                 <span className="text-sm text-gray-700">{option}</span>
               </label>

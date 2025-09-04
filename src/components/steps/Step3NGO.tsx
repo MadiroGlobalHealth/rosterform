@@ -28,6 +28,7 @@ const Step3NGO: React.FC<Step3NGOProps> = ({
     handleSubmit,
     watch,
     setValue,
+    trigger,
     formState: { errors, isValid }
   } = useForm<NGOExperience>({
     resolver: zodResolver(ngoSchema),
@@ -86,7 +87,10 @@ const Step3NGO: React.FC<Step3NGOProps> = ({
           <MultiSelect
             options={formOptions.organizationTypes}
             selected={watchedValues.organizationTypes || []}
-            onChange={(selected) => setValue('organizationTypes', selected)}
+            onChange={(selected) => {
+              setValue('organizationTypes', selected);
+              trigger('organizationTypes');
+            }}
             className="mt-2"
           />
         </FormField>
@@ -116,7 +120,10 @@ const Step3NGO: React.FC<Step3NGOProps> = ({
                   name="lmicExperience"
                   value={option}
                   checked={watchedValues.lmicExperience === option}
-                  onChange={(e) => setValue('lmicExperience', e.target.value)}
+                  onChange={(e) => {
+                    setValue('lmicExperience', e.target.value);
+                    trigger('lmicExperience');
+                  }}
                   className="mt-1"
                 />
                 <span className={`text-sm leading-relaxed ${

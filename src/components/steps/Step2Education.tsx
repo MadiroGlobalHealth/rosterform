@@ -52,9 +52,12 @@ const Step2Education: React.FC<Step2EducationProps> = ({
 
   // Set initial values when data prop changes
   useEffect(() => {
-    Object.keys(data).forEach((key) => {
-      setValue(key as keyof EducationExperience, data[key as keyof EducationExperience]);
-    });
+    setValue('highestEducation', data.highestEducation || '');
+    setValue('highestEducationOther', data.highestEducationOther || '');
+    setValue('fieldOfStudy', data.fieldOfStudy || '');
+    setValue('fieldOfStudyOther', data.fieldOfStudyOther || '');
+    setValue('yearsExperience', data.yearsExperience || '');
+    setValue('contributionLevel', data.contributionLevel || '');
   }, [data, setValue]);
 
   // Handle "Other" option visibility
@@ -108,9 +111,10 @@ const Step2Education: React.FC<Step2EducationProps> = ({
           <FormField
             label="Please specify your education level"
             required
+            error={errors.highestEducationOther?.message}
           >
             <input
-              {...register('highestEducation')}
+              {...register('highestEducationOther')}
               type="text"
               className="form-input"
               placeholder="e.g., Professional Certificate, Bootcamp"
@@ -143,9 +147,10 @@ const Step2Education: React.FC<Step2EducationProps> = ({
           <FormField
             label="Please specify your field of study"
             required
+            error={errors.fieldOfStudyOther?.message}
           >
             <input
-              {...register('fieldOfStudy')}
+              {...register('fieldOfStudyOther')}
               type="text"
               className="form-input"
               placeholder="e.g., Biomedical Engineering, Business Administration"

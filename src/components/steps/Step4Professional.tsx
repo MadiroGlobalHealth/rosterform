@@ -4,8 +4,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ProfessionalProfile, StepProps } from '@/types/form';
 import { professionalSchema } from '@/utils/validation';
 import { formOptions } from '@/utils/formOptions';
+import { useDebouncedFormUpdates } from '@/hooks/useDebouncedFormUpdates';
 import FormField from '@/components/ui/FormField';
 import MultiSelect from '@/components/ui/MultiSelect';
+import MultiSelectWithOther from '@/components/ui/MultiSelectWithOther';
 import StepNavigation from '@/components/ui/StepNavigation';
 
 interface Step4ProfessionalProps extends StepProps {
@@ -24,9 +26,11 @@ const Step4Professional: React.FC<Step4ProfessionalProps> = ({
   const [canProceed, setCanProceed] = useState(false);
 
   const {
+    register,
     handleSubmit,
     watch,
     setValue,
+    trigger,
     formState: { errors, isValid }
   } = useForm<ProfessionalProfile>({
     resolver: zodResolver(professionalSchema),
@@ -35,11 +39,12 @@ const Step4Professional: React.FC<Step4ProfessionalProps> = ({
   });
 
   const watchedValues = watch();
+  const { debouncedUpdate, forceUpdate } = useDebouncedFormUpdates(onUpdate);
 
-  // Update parent component when form data changes
+  // Update parent component when form data changes (debounced)
   useEffect(() => {
-    onUpdate(watchedValues);
-  }, [watchedValues, onUpdate]);
+    debouncedUpdate(watchedValues);
+  }, [watchedValues, debouncedUpdate]);
 
   // Update proceed state based on form validity
   useEffect(() => {
@@ -49,14 +54,20 @@ const Step4Professional: React.FC<Step4ProfessionalProps> = ({
   // Set initial values when data prop changes
   useEffect(() => {
     setValue('expertiseAreas', data.expertiseAreas || []);
+    setValue('expertiseAreasOther', data.expertiseAreasOther || '');
     setValue('rolesHeld', data.rolesHeld || []);
+    setValue('rolesHeldOther', data.rolesHeldOther || '');
     setValue('digitalHealthPlatforms', data.digitalHealthPlatforms || []);
+    setValue('digitalHealthPlatformsOther', data.digitalHealthPlatformsOther || '');
     setValue('languages', data.languages || []);
+    setValue('languagesOther', data.languagesOther || '');
     setValue('certifications', data.certifications || []);
+    setValue('certificationsOther', data.certificationsOther || '');
   }, [data, setValue]);
 
   const onSubmit = () => {
     if (isValid) {
+      forceUpdate(watchedValues);
       onNext();
     }
   };
@@ -86,11 +97,31 @@ const Step4Professional: React.FC<Step4ProfessionalProps> = ({
           <MultiSelect
             options={formOptions.expertiseAreas}
             selected={watchedValues.expertiseAreas || []}
-            onChange={(selected) => setValue('expertiseAreas', selected)}
+            onChange={(selected) => {
+              setValue('expertiseAreas', selected);
+              trigger('expertiseAreas');
+            }}
             maxSelections={3}
+            showOrder={true}
             className="mt-2"
           />
         </FormField>
+
+        {/* Other Expertise Areas */}
+        {watchedValues.expertiseAreas?.includes('Other') && (
+          <FormField
+            label="Please specify your other expertise area"
+            required
+            error={errors.expertiseAreasOther?.message}
+          >
+            <input
+              {...register('expertiseAreasOther')}
+              type="text"
+              className="form-input"
+              placeholder="e.g., Blockchain, IoT"
+            />
+          </FormField>
+        )}
 
         {/* Top 3 Roles */}
         <FormField
@@ -102,11 +133,31 @@ const Step4Professional: React.FC<Step4ProfessionalProps> = ({
           <MultiSelect
             options={formOptions.roleTypes}
             selected={watchedValues.rolesHeld || []}
-            onChange={(selected) => setValue('rolesHeld', selected)}
+            onChange={(selected) => {
+              setValue('rolesHeld', selected);
+              trigger('rolesHeld');
+            }}
             maxSelections={3}
+            showOrder={true}
             className="mt-2"
           />
         </FormField>
+
+        {/* Other Roles */}
+        {watchedValues.rolesHeld?.includes('Other') && (
+          <FormField
+            label="Please specify your other role"
+            required
+            error={errors.rolesHeldOther?.message}
+          >
+            <input
+              {...register('rolesHeldOther')}
+              type="text"
+              className="form-input"
+              placeholder="e.g., Innovation Manager, Community Coordinator"
+            />
+          </FormField>
+        )}
 
         {/* Digital Health Platforms */}
         <FormField
@@ -118,10 +169,29 @@ const Step4Professional: React.FC<Step4ProfessionalProps> = ({
           <MultiSelect
             options={formOptions.digitalPlatforms}
             selected={watchedValues.digitalHealthPlatforms || []}
-            onChange={(selected) => setValue('digitalHealthPlatforms', selected)}
+            onChange={(selected) => {
+              setValue('digitalHealthPlatforms', selected);
+              trigger('digitalHealthPlatforms');
+            }}
             className="mt-2"
           />
         </FormField>
+
+        {/* Other Digital Health Platforms */}
+        {watchedValues.digitalHealthPlatforms?.includes('Other') && (
+          <FormField
+            label="Please specify the platform"
+            required
+            error={errors.digitalHealthPlatformsOther?.message}
+          >
+            <input
+              {...register('digitalHealthPlatformsOther')}
+              type="text"
+              className="form-input"
+              placeholder="e.g., Epic, Cerner, Allscripts"
+            />
+          </FormField>
+        )}
 
         {/* Languages */}
         <FormField
@@ -133,10 +203,29 @@ const Step4Professional: React.FC<Step4ProfessionalProps> = ({
           <MultiSelect
             options={formOptions.languages}
             selected={watchedValues.languages || []}
-            onChange={(selected) => setValue('languages', selected)}
+            onChange={(selected) => {
+              setValue('languages', selected);
+              trigger('languages');
+            }}
             className="mt-2"
           />
         </FormField>
+
+        {/* Other Languages */}
+        {watchedValues.languages?.includes('Other') && (
+          <FormField
+            label="Please specify the language"
+            required
+            error={errors.languagesOther?.message}
+          >
+            <input
+              {...register('languagesOther')}
+              type="text"
+              className="form-input"
+              placeholder="e.g., German (fluent), Mandarin (conversational)"
+            />
+          </FormField>
+        )}
 
         {/* Professional Certifications */}
         <FormField
@@ -147,10 +236,29 @@ const Step4Professional: React.FC<Step4ProfessionalProps> = ({
           <MultiSelect
             options={formOptions.certifications}
             selected={watchedValues.certifications || []}
-            onChange={(selected) => setValue('certifications', selected)}
+            onChange={(selected) => {
+              setValue('certifications', selected);
+              trigger('certifications');
+            }}
             className="mt-2"
           />
         </FormField>
+
+        {/* Other Certifications */}
+        {watchedValues.certifications?.includes('Other') && (
+          <FormField
+            label="Please specify the certification"
+            required
+            error={errors.certificationsOther?.message}
+          >
+            <input
+              {...register('certificationsOther')}
+              type="text"
+              className="form-input"
+              placeholder="e.g., PRINCE2, Agile, PMI"
+            />
+          </FormField>
+        )}
 
         {/* Show summary if multiple selections made */}
         {(watchedValues.expertiseAreas?.length > 0 || watchedValues.rolesHeld?.length > 0) && (

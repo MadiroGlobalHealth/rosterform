@@ -25,9 +25,11 @@ const Step5OpenSource: React.FC<Step5OpenSourceProps> = ({
   const [canProceed, setCanProceed] = useState(false);
 
   const {
+    register,
     handleSubmit,
     watch,
     setValue,
+    trigger,
     formState: { errors, isValid }
   } = useForm<OpenSourceEntrepreneurship>({
     resolver: zodResolver(openSourceSchema),
@@ -81,9 +83,28 @@ const Step5OpenSource: React.FC<Step5OpenSourceProps> = ({
           <MultiSelect
             options={formOptions.openSourcePlatforms}
             selected={watchedValues.openSourcePlatforms || []}
-            onChange={(selected) => setValue('openSourcePlatforms', selected)}
+            onChange={(selected) => {
+              setValue('openSourcePlatforms', selected);
+              trigger('openSourcePlatforms');
+            }}
           />
         </FormField>
+
+        {/* Other Open Source Platforms */}
+        {watchedValues.openSourcePlatforms?.includes('Other') && (
+          <FormField
+            label="Please specify the platform"
+            required
+            error={errors.openSourcePlatformsOther?.message}
+          >
+            <input
+              {...register('openSourcePlatformsOther')}
+              type="text"
+              className="form-input"
+              placeholder="e.g., FHIR Server, Custom EMR Platform"
+            />
+          </FormField>
+        )}
 
         <FormField
           label="Have you contributed to open-source communities?"
@@ -98,7 +119,10 @@ const Step5OpenSource: React.FC<Step5OpenSourceProps> = ({
                   name="openSourceContributions"
                   value={level}
                   checked={watchedValues.openSourceContributions === level}
-                  onChange={(e) => setValue('openSourceContributions', e.target.value)}
+                  onChange={(e) => {
+                    setValue('openSourceContributions', e.target.value);
+                    trigger('openSourceContributions');
+                  }}
                 />
                 <span className="text-sm text-gray-700">{level}</span>
               </label>
@@ -119,7 +143,10 @@ const Step5OpenSource: React.FC<Step5OpenSourceProps> = ({
                   name="startupExperience"
                   value={option}
                   checked={watchedValues.startupExperience === option}
-                  onChange={(e) => setValue('startupExperience', e.target.value)}
+                  onChange={(e) => {
+                    setValue('startupExperience', e.target.value);
+                    trigger('startupExperience');
+                  }}
                 />
                 <span className="text-sm text-gray-700">{option}</span>
               </label>
@@ -135,9 +162,28 @@ const Step5OpenSource: React.FC<Step5OpenSourceProps> = ({
           <MultiSelect
             options={formOptions.problemSolvingApproaches}
             selected={watchedValues.problemSolvingApproach || []}
-            onChange={(selected) => setValue('problemSolvingApproach', selected)}
+            onChange={(selected) => {
+              setValue('problemSolvingApproach', selected);
+              trigger('problemSolvingApproach');
+            }}
           />
         </FormField>
+
+        {/* Other Problem-solving Approach */}
+        {watchedValues.problemSolvingApproach?.includes('Other') && (
+          <FormField
+            label="Please specify your approach"
+            required
+            error={errors.problemSolvingApproachOther?.message}
+          >
+            <input
+              {...register('problemSolvingApproachOther')}
+              type="text"
+              className="form-input"
+              placeholder="e.g., Agile methodology, Design thinking"
+            />
+          </FormField>
+        )}
 
         <StepNavigation
           onBack={onBack}

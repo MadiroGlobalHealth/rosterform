@@ -25,8 +25,15 @@ export async function submitToNetlifyForm(formData: FormData): Promise<NetlifySu
     netlifyFormData.append('country', formData.personal.country || '');
     
     // Education & Experience
-    netlifyFormData.append('highestEducation', formData.education.highestEducation || '');
-    netlifyFormData.append('fieldOfStudy', formData.education.fieldOfStudy || '');
+    const finalHighestEducation = formData.education.highestEducation === 'Other' 
+      ? formData.education.highestEducationOther || ''
+      : formData.education.highestEducation || '';
+    const finalFieldOfStudy = formData.education.fieldOfStudy === 'Other' 
+      ? formData.education.fieldOfStudyOther || ''
+      : formData.education.fieldOfStudy || '';
+      
+    netlifyFormData.append('highestEducation', finalHighestEducation);
+    netlifyFormData.append('fieldOfStudy', finalFieldOfStudy);
     netlifyFormData.append('yearsExperience', formData.education.yearsExperience || '');
     netlifyFormData.append('contributionLevel', formData.education.contributionLevel || '');
     
@@ -37,34 +44,60 @@ export async function submitToNetlifyForm(formData: FormData): Promise<NetlifySu
     netlifyFormData.append('lmicExperience', formData.ngo.lmicExperience || '');
     
     // Professional Profile
-    netlifyFormData.append('expertiseAreas', Array.isArray(formData.professional.expertiseAreas) 
-      ? formData.professional.expertiseAreas.join('; ') 
-      : '');
-    netlifyFormData.append('rolesHeld', Array.isArray(formData.professional.rolesHeld) 
-      ? formData.professional.rolesHeld.join('; ') 
-      : '');
-    netlifyFormData.append('digitalHealthPlatforms', Array.isArray(formData.professional.digitalHealthPlatforms) 
-      ? formData.professional.digitalHealthPlatforms.join('; ') 
-      : '');
-    netlifyFormData.append('languages', Array.isArray(formData.professional.languages) 
-      ? formData.professional.languages.join('; ') 
-      : '');
-    netlifyFormData.append('certifications', Array.isArray(formData.professional.certifications) 
-      ? formData.professional.certifications.join('; ') 
-      : '');
+    const finalExpertiseAreas = Array.isArray(formData.professional.expertiseAreas) 
+      ? formData.professional.expertiseAreas.map(area => 
+          area === 'Other' ? formData.professional.expertiseAreasOther || 'Other' : area
+        ).join('; ')
+      : '';
+    const finalRolesHeld = Array.isArray(formData.professional.rolesHeld) 
+      ? formData.professional.rolesHeld.map(role => 
+          role === 'Other' ? formData.professional.rolesHeldOther || 'Other' : role
+        ).join('; ')
+      : '';
+    const finalDigitalPlatforms = Array.isArray(formData.professional.digitalHealthPlatforms) 
+      ? formData.professional.digitalHealthPlatforms.map(platform => 
+          platform === 'Other' ? formData.professional.digitalHealthPlatformsOther || 'Other' : platform
+        ).join('; ')
+      : '';
+    const finalLanguages = Array.isArray(formData.professional.languages) 
+      ? formData.professional.languages.map(language => 
+          language === 'Other' ? formData.professional.languagesOther || 'Other' : language
+        ).join('; ')
+      : '';
+    const finalCertifications = Array.isArray(formData.professional.certifications) 
+      ? formData.professional.certifications.map(cert => 
+          cert === 'Other' ? formData.professional.certificationsOther || 'Other' : cert
+        ).join('; ')
+      : '';
+
+    netlifyFormData.append('expertiseAreas', finalExpertiseAreas);
+    netlifyFormData.append('rolesHeld', finalRolesHeld);
+    netlifyFormData.append('digitalHealthPlatforms', finalDigitalPlatforms);
+    netlifyFormData.append('languages', finalLanguages);
+    netlifyFormData.append('certifications', finalCertifications);
     
     // Open Source & Entrepreneurship
-    netlifyFormData.append('openSourcePlatforms', Array.isArray(formData.openSource.openSourcePlatforms) 
-      ? formData.openSource.openSourcePlatforms.join('; ') 
-      : '');
+    const finalOpenSourcePlatforms = Array.isArray(formData.openSource.openSourcePlatforms) 
+      ? formData.openSource.openSourcePlatforms.map(platform => 
+          platform === 'Other' ? formData.openSource.openSourcePlatformsOther || 'Other' : platform
+        ).join('; ')
+      : '';
+    const finalProblemSolvingApproach = Array.isArray(formData.openSource.problemSolvingApproach) 
+      ? formData.openSource.problemSolvingApproach.map(approach => 
+          approach === 'Other' ? formData.openSource.problemSolvingApproachOther || 'Other' : approach
+        ).join('; ')
+      : '';
+
+    netlifyFormData.append('openSourcePlatforms', finalOpenSourcePlatforms);
     netlifyFormData.append('openSourceContributions', formData.openSource.openSourceContributions || '');
     netlifyFormData.append('startupExperience', formData.openSource.startupExperience || '');
-    netlifyFormData.append('problemSolvingApproach', Array.isArray(formData.openSource.problemSolvingApproach) 
-      ? formData.openSource.problemSolvingApproach.join('; ') 
-      : '');
+    netlifyFormData.append('problemSolvingApproach', finalProblemSolvingApproach);
     
     // Availability & Engagement
-    netlifyFormData.append('preferredHourlyRate', formData.availability.preferredHourlyRate || '');
+    const preferredRateRange = formData.availability.preferredHourlyRateMin && formData.availability.preferredHourlyRateMax
+      ? `$${formData.availability.preferredHourlyRateMin}-${formData.availability.preferredHourlyRateMax}`
+      : formData.availability.preferredHourlyRate || '';
+    netlifyFormData.append('preferredHourlyRate', preferredRateRange);
     netlifyFormData.append('minimumHourlyRate', formData.availability.minimumHourlyRate || '');
     netlifyFormData.append('weeklyAvailability', formData.availability.weeklyAvailability || '');
     netlifyFormData.append('unavailablePeriods', formData.availability.unavailablePeriods || '');
@@ -73,7 +106,10 @@ export async function submitToNetlifyForm(formData: FormData): Promise<NetlifySu
     netlifyFormData.append('maxAssignmentDuration', formData.availability.maxAssignmentDuration || '');
     
     // Contracting & Compliance
-    netlifyFormData.append('contractingModality', formData.contracting.contractingModality || '');
+    const finalContractingModality = formData.contracting.contractingModality === 'Other' 
+      ? formData.contracting.contractingModalityOther || ''
+      : formData.contracting.contractingModality || '';
+    netlifyFormData.append('contractingModality', finalContractingModality);
     netlifyFormData.append('internationalContracting', formData.contracting.internationalContracting || '');
     netlifyFormData.append('workRestrictions', formData.contracting.workRestrictions || '');
     
