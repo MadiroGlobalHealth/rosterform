@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { FormData, FormStep } from '@/types/form';
 
 const STORAGE_KEY = 'madiro-roster-form-data';
@@ -62,6 +62,7 @@ export const useFormData = () => {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const saveTimeoutRef = useRef<NodeJS.Timeout>();
 
   // Load data from localStorage on mount
   useEffect(() => {
@@ -76,7 +77,7 @@ export const useFormData = () => {
     }
   }, []);
 
-  // Save to localStorage whenever formData changes
+  // Debounced save to localStorage to prevent lag on every keystroke
   const saveToStorage = useCallback((data: FormData) => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -85,16 +86,29 @@ export const useFormData = () => {
     }
   }, []);
 
+  // Debounce localStorage writes to prevent lag
+  const debouncedSave = useCallback((data: FormData) => {
+    // Clear existing timeout
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    
+    // Set new timeout
+    saveTimeoutRef.current = setTimeout(() => {
+      saveToStorage(data);
+    }, 300); // Wait 300ms after last change
+  }, [saveToStorage]);
+
   const updateStepData = useCallback((step: FormStep, data: any) => {
     setFormData(prev => {
       const newData = {
         ...prev,
         [step]: { ...prev[step], ...data }
       };
-      saveToStorage(newData);
+      debouncedSave(newData); // Use debounced save instead of immediate
       return newData;
     });
-  }, [saveToStorage]);
+  }, [debouncedSave]);
 
   const updateNewsletterData = useCallback((data: any) => {
     setFormData(prev => {
@@ -102,18 +116,37 @@ export const useFormData = () => {
         ...prev,
         newsletter: { ...prev.newsletter, ...data }
       };
-      saveToStorage(newData);
+      debouncedSave(newData); // Use debounced save
       return newData;
     });
-  }, [saveToStorage]);
+  }, [debouncedSave]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Force immediate save (useful when navigating between steps)
+  const forceSave = useCallback(() => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    saveToStorage(formData);
+  }, [formData, saveToStorage]);
 
   const nextStep = useCallback(() => {
+    forceSave(); // Save immediately when navigating
     setCurrentStep(prev => Math.min(prev + 1, 9)); // 8 steps + confirmation
-  }, []);
+  }, [forceSave]);
 
   const prevStep = useCallback(() => {
+    forceSave(); // Save immediately when navigating
     setCurrentStep(prev => Math.max(prev - 1, 1));
-  }, []);
+  }, [forceSave]);
 
   const goToStep = useCallback((step: number) => {
     setCurrentStep(Math.min(Math.max(step, 1), 9));
@@ -141,6 +174,7 @@ export const useFormData = () => {
     prevStep,
     goToStep,
     resetForm,
-    clearStorage
+    clearStorage,
+    forceSave
   };
 };
