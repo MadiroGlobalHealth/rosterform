@@ -10,9 +10,8 @@
 [build.environment]
   NODE_VERSION = "18"
 
-# Enable Netlify Forms
-[[plugins]]
-  package = "@netlify/plugin-forms"
+# Netlify Forms are automatically detected
+# No plugin installation required
 
 # Security headers
 [[headers]]
