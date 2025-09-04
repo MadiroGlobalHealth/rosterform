@@ -62,7 +62,7 @@ export const useFormData = () => {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const saveTimeoutRef = useRef<NodeJS.Timeout>();
+  const saveTimeoutRef = useRef<number>();
 
   // Load data from localStorage on mount
   useEffect(() => {
@@ -96,7 +96,7 @@ export const useFormData = () => {
     // Set new timeout
     saveTimeoutRef.current = setTimeout(() => {
       saveToStorage(data);
-    }, 300); // Wait 300ms after last change
+    }, 300) as unknown as number; // Wait 300ms after last change
   }, [saveToStorage]);
 
   const updateStepData = useCallback((step: FormStep, data: any) => {
