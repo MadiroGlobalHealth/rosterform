@@ -128,11 +128,10 @@ export async function submitToNetlifyForm(formData: FormData): Promise<NetlifySu
     // Metadata
     netlifyFormData.append('submissionTime', new Date().toISOString());
 
-    // Submit to Netlify (will work automatically on Netlify deployment)
+    // Submit to Netlify Forms endpoint
     const response = await fetch('/', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams(netlifyFormData as any).toString()
+      body: netlifyFormData
     });
 
     if (response.ok) {
