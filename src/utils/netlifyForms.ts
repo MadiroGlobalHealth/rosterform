@@ -18,6 +18,9 @@ export async function submitToNetlifyForm(formData: FormData): Promise<NetlifySu
     // Add form-name (required by Netlify)
     netlifyFormData.append('form-name', 'madiro-roster');
     
+    // Add honeypot field (should be empty to pass spam check)
+    netlifyFormData.append('bot-field', '');
+    
     // Personal Information
     netlifyFormData.append('fullName', formData.personal.fullName || '');
     netlifyFormData.append('email', formData.personal.email || '');
