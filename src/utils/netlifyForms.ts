@@ -261,6 +261,8 @@ export function sanitizeFormData(formData: FormData): FormData {
     },
     availability: {
       preferredHourlyRate: sanitizeString(formData.availability.preferredHourlyRate),
+      preferredHourlyRateMin: sanitizeString(formData.availability.preferredHourlyRateMin),
+      preferredHourlyRateMax: sanitizeString(formData.availability.preferredHourlyRateMax),
       minimumHourlyRate: sanitizeString(formData.availability.minimumHourlyRate),
       weeklyAvailability: sanitizeString(formData.availability.weeklyAvailability),
       unavailablePeriods: sanitizeString(formData.availability.unavailablePeriods || ''),

@@ -7,7 +7,6 @@ import { formOptions } from '@/utils/formOptions';
 import { useDebouncedFormUpdates } from '@/hooks/useDebouncedFormUpdates';
 import FormField from '@/components/ui/FormField';
 import MultiSelect from '@/components/ui/MultiSelect';
-import MultiSelectWithOther from '@/components/ui/MultiSelectWithOther';
 import StepNavigation from '@/components/ui/StepNavigation';
 
 interface Step4ProfessionalProps extends StepProps {

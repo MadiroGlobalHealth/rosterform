@@ -45,7 +45,7 @@ const MultiSelectWithOther: React.FC<MultiSelectWithOtherProps> = ({
   return (
     <div>
       <FormField
-        label={label}
+        label={label || ''}
         required={required}
         error={error}
         hint={hint}
